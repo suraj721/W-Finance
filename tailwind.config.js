@@ -5,16 +5,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#6366f1", // Indigo 500
-        secondary: "#ec4899", // Pink 500
+        primary: "#D9FF00", // Neon Lime
+        secondary: "#00D1FF", // Cyan
+        accent: "#FF5C00", // Orange
         dark: {
-          900: "#0f172a", // Slate 900
-          800: "#1e293b", // Slate 800
-          700: "#334155", // Slate 700
+          900: "#0D0D0D", // Deep Black
+          800: "#161616", // Card Black
+          700: "#222222", // Lighter Black (border)
         },
-        light: {
-          100: "#f1f5f9", // Slate 100
-          200: "#e2e8f0", // Slate 200
+        slate: {
+          ...require('tailwindcss/colors').slate,
+          800: "#161616", // Override slate 800 for cards if needed by components
         }
       },
       fontFamily: {
