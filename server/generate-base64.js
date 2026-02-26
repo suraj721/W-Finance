@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const keyPath = path.join(__dirname, '../serviceAccountKey.json');
+const keyPath = path.join(__dirname, 'serviceAccountKey.json');
 
 try {
     if (!fs.existsSync(keyPath)) {
