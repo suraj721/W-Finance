@@ -1,13 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const Transaction = require('../models/Transaction');
+const { protect } = require('../middleware/auth');
 
 // @desc    Get all transactions
 // @route   GET /api/transactions
-// @access  Public
-router.get('/', async (req, res, next) => {
+// @access  Private
+router.get('/', protect, async (req, res, next) => {
     try {
-        const transactions = await Transaction.find();
+        if (!req.user) {
+            return res.status(401).json({ success: false, error: 'Not authorized' });
+        }
+
+        const transactions = await Transaction.find({ user: req.user.id }).sort({ createdAt: -1 });
 
         return res.status(200).json({
             success: true,
@@ -24,9 +29,13 @@ router.get('/', async (req, res, next) => {
 
 // @desc    Import transactions
 // @route   POST /api/transactions/import
-// @access  Public
-router.post('/import', async (req, res, next) => {
+// @access  Private
+router.post('/import', protect, async (req, res, next) => {
     try {
+        if (!req.user) {
+            return res.status(401).json({ success: false, error: 'Not authorized' });
+        }
+
         const transactions = req.body;
 
         if (!Array.isArray(transactions)) {
@@ -36,7 +45,13 @@ router.post('/import', async (req, res, next) => {
             });
         }
 
-        const createdTransactions = await Transaction.insertMany(transactions);
+        const userTransactions = transactions.map((transaction) => ({
+            text: transaction.text,
+            amount: transaction.amount,
+            user: req.user.id
+        }));
+
+        const createdTransactions = await Transaction.insertMany(userTransactions);
 
         return res.status(201).json({
             success: true,
@@ -53,12 +68,19 @@ router.post('/import', async (req, res, next) => {
 
 // @desc    Add transaction
 // @route   POST /api/transactions
-// @access  Public
-router.post('/', async (req, res, next) => {
+// @access  Private
+router.post('/', protect, async (req, res, next) => {
     try {
-        const { text, amount } = req.body;
+        if (!req.user) {
+            return res.status(401).json({ success: false, error: 'Not authorized' });
+        }
 
-        const transaction = await Transaction.create(req.body);
+        const { text, amount } = req.body;
+        const transaction = await Transaction.create({
+            text,
+            amount,
+            user: req.user.id
+        });
 
         return res.status(201).json({
             success: true,
@@ -83,10 +105,17 @@ router.post('/', async (req, res, next) => {
 
 // @desc    Delete transaction
 // @route   DELETE /api/transactions/:id
-// @access  Public
-router.delete('/:id', async (req, res, next) => {
+// @access  Private
+router.delete('/:id', protect, async (req, res, next) => {
     try {
-        const transaction = await Transaction.findById(req.params.id);
+        if (!req.user) {
+            return res.status(401).json({ success: false, error: 'Not authorized' });
+        }
+
+        const transaction = await Transaction.findOne({
+            _id: req.params.id,
+            user: req.user.id
+        });
 
         if (!transaction) {
             return res.status(404).json({
