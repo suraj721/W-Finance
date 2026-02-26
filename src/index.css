@@ -11,22 +11,25 @@ body {
         sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #0f172a;
-    /* dark-900 */
-    color: #f1f5f9;
-    /* light-100 */
+    background-color: #F8F9FA;
+    color: #0f172a;
+}
+
+.dark body {
+    background-color: #060606;
+    color: #FFFFFF;
 }
 
 @layer components {
     .glass-panel {
-        @apply bg-white/70 dark:bg-slate-800/50 backdrop-blur-lg border border-slate-200 dark:border-slate-700/50 shadow-xl;
+        @apply bg-white border border-slate-200 shadow-[0_10px_30px_rgba(15,23,42,0.08)] dark:bg-[#161616] dark:border-[#222222] dark:shadow-2xl;
     }
 
     .btn-primary {
-        @apply bg-gradient-to-r from-primary to-secondary text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:shadow-primary/50 transition-all duration-300 hover:scale-105 active:scale-95;
+        @apply bg-primary text-black font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:scale-[1.02] active:scale-95;
     }
 
     .input-field {
-        @apply w-full bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-slate-200 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors;
+        @apply w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-slate-900 dark:bg-[#1A1A1A] dark:border-[#222222] dark:text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-slate-400 dark:placeholder:text-[#555555];
     }
 }
