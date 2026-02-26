@@ -5,18 +5,28 @@ const User = require('../models/User');
 // Initialize Firebase Admin
 let serviceAccount;
 
-if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
-    // Production: Decode base64 string
-    const buffer = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64');
-    serviceAccount = JSON.parse(buffer.toString('utf-8'));
-} else {
-    // Development: Load from file
-    try {
+try {
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
+        console.log('Attempting to load Firebase credentials from FIREBASE_SERVICE_ACCOUNT_BASE64...');
+        // Production: Decode base64 string
+        const buffer = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64');
+        serviceAccount = JSON.parse(buffer.toString('utf-8'));
+        console.log('Successfully loaded Firebase credentials from environment variable.');
+    } else {
+        // Development: Load from file
+        console.log('Attempting to load Firebase credentials from serviceAccountKey.json...');
         serviceAccount = require('../serviceAccountKey.json');
-    } catch (error) {
-        console.error('Error: serviceAccountKey.json not found and FIREBASE_SERVICE_ACCOUNT_BASE64 not set.');
-        process.exit(1);
+        console.log('Successfully loaded Firebase credentials from file.');
     }
+} catch (error) {
+    console.error('CRITICAL ERROR: Failed to load Firebase credentials.');
+    console.error('Error details:', error.message);
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
+        console.error('Hint: Check if FIREBASE_SERVICE_ACCOUNT_BASE64 is a valid Base64 encoded JSON string.');
+    } else {
+        console.error('Hint: Ensure serviceAccountKey.json exists in the server directory or FIREBASE_SERVICE_ACCOUNT_BASE64 is set.');
+    }
+    process.exit(1);
 }
 
 admin.initializeApp({
@@ -60,7 +70,7 @@ const protect = async (req, res, next) => {
             next();
         } catch (err) {
             console.error('Auth Error:', err);
-            res.status(401).json({ success: false, error: 'Not authorized, token failed' });
+            res.status(401).json({ success: false, error: 'Not authorized, token failed', details: err.message });
         }
     }
 
