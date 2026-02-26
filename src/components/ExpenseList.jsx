@@ -12,38 +12,34 @@ function ExpenseList({ transactions, deleteTransaction }) {
     })
     .filter((transaction) =>
       transaction.text.toUpperCase().includes(searchTerm.toUpperCase())
-    );
+    )
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
-    <div className="glass-panel p-6 rounded-2xl h-full flex flex-col">
+    <div className="glass-panel p-6 rounded-[2rem] h-[624px] flex flex-col">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <span className="w-1 h-6 bg-secondary rounded-full"></span>
-          History
-        </h3>
-        <div className="flex gap-2">
-          <select
-            className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg px-3 py-1 focus:outline-none focus:border-primary"
-            value={sortType}
-            onChange={(e) => setSortType(e.target.value)}
-          >
-            <option value="All">All</option>
-            <option value="Income">Income</option>
-            <option value="Expense">Expense</option>
-          </select>
-        </div>
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white">Spending History</h3>
+        <select
+          className="bg-white dark:bg-[#1A1A1A] border border-slate-300 dark:border-[#222222] text-slate-500 dark:text-slate-400 text-xs font-bold rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary uppercase tracking-wider"
+          value={sortType}
+          onChange={(e) => setSortType(e.target.value)}
+        >
+          <option value="All">All</option>
+          <option value="Income">Incomes</option>
+          <option value="Expense">Expenses</option>
+        </select>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-6">
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </span>
           <input
             type="text"
-            className="w-full bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg pl-10 pr-4 py-2 text-slate-900 dark:text-slate-300 text-sm focus:outline-none focus:border-primary transition-colors"
+            className="input-field pl-11 py-2 text-sm"
             placeholder="Search transactions..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -51,44 +47,49 @@ function ExpenseList({ transactions, deleteTransaction }) {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-        {filteredTransactions.length === 0 ? (
-          <div className="text-center text-slate-500 py-8">
-            No transactions found
-          </div>
-        ) : (
-          <ul className="space-y-3">
-            {filteredTransactions.map((transaction) => (
-              <li
-                key={transaction._id}
-                className="group flex justify-between items-center p-4 bg-white/50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-2 h-2 rounded-full ${transaction.amount >= 0 ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" : "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"}`}></div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium">{transaction.text}</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span
-                    className={`font-bold ${
-                      transaction.amount >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
-                    }`}
-                  >
-                    {transaction.amount >= 0 ? "+" : "-"}₹{Math.abs(transaction.amount)}
-                  </span>
-                  <button
-                    onClick={() => deleteTransaction(transaction._id)}
-                    className="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all duration-200 p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-400/10"
-                    title="Delete"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left">
+          <thead className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] border-b border-slate-200 dark:border-[#222222]">
+            <tr>
+              <th className="pb-4 pt-0">Category</th>
+              <th className="pb-4 pt-0">Amount</th>
+              <th className="pb-4 pt-0 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-200 dark:divide-[#222222]">
+            {filteredTransactions.length === 0 ? (
+              <tr>
+                <td colSpan="3" className="py-8 text-center text-slate-500 text-sm">No records found</td>
+              </tr>
+            ) : (
+              filteredTransactions.map((transaction) => (
+                <tr key={transaction._id} className="group hover:bg-slate-100 dark:hover:bg-[#1A1A1A] transition-colors">
+                  <td className="py-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-1.5 h-1.5 rounded-full ${transaction.amount >= 0 ? "bg-secondary shadow-[0_0_8px_#00D1FF]" : "bg-accent shadow-[0_0_8px_#FF5C00]"}`} />
+                      <span className="text-slate-900 dark:text-white font-semibold text-sm">{transaction.text}</span>
+                    </div>
+                  </td>
+                  <td className="py-4">
+                    <span className={`text-sm font-bold ${transaction.amount >= 0 ? "text-secondary" : "text-accent"}`}>
+                      {transaction.amount >= 0 ? "+" : "-"}₹{Math.abs(transaction.amount).toLocaleString()}
+                    </span>
+                  </td>
+                  <td className="py-4 text-right">
+                    <button
+                      onClick={() => deleteTransaction(transaction._id)}
+                      className="text-slate-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
