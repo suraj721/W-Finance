@@ -21,3 +21,12 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# local secrets
+server/serviceAccountKey.json
+
+# user-generated server uploads
+server/public/uploads/
+
+# local media artifacts
+public/*.mov
