@@ -1,71 +1,175 @@
-# Getting Started with Create React App
+# Expense Tracker
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Full-stack personal finance tracker with Firebase authentication, MongoDB persistence, transaction analytics, profile management, and reminders.
 
-## Available Scripts
+## Tech Stack
 
-In the project directory, you can run:
+- Frontend: React (Create React App), React Router, Tailwind CSS, Recharts, Firebase Web Auth
+- Backend: Node.js, Express, MongoDB (Mongoose), Firebase Admin SDK, Multer
+- Auth: Firebase ID tokens verified on backend
+- Deployment frontend: Vercel or Netlify
+- Deployment backend: Render (recommended), Railway, Fly.io, or any Node host
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- User signup/login with Firebase Authentication
+- Secure protected routes
+- Create/list/delete expense or income transactions
+- Dashboard includes balance summary, income and expense charts, and transaction history
+- Reminder CRUD APIs (`/api/reminders`)
+- Profile update with avatar upload (`/api/auth/updatedetails`)
+- Dark/light theme toggle
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Structure
 
-### `npm test`
+```text
+expense-tracker/
+  src/                    # React frontend
+  public/                 # Static assets + Netlify redirect file
+  server/                 # Express backend
+    config/
+    middleware/
+    models/
+    routes/
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Local Development
 
-### `npm run build`
+### 1. Install dependencies
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm install
+cd server && npm install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 2. Backend environment (`server/.env`)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Create `server/.env`:
 
-### `npm run eject`
+```env
+NODE_ENV=development
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+FIREBASE_SERVICE_ACCOUNT_BASE64=your_base64_encoded_service_account_json
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Notes:
+- In local development, backend also supports `server/serviceAccountKey.json` when `FIREBASE_SERVICE_ACCOUNT_BASE64` is not set.
+- `server/serviceAccountKey.json` is ignored by git and must never be committed.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 3. Frontend environment (`.env`)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Create root `.env`:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```env
+REACT_APP_API_BASE_URL=http://localhost:5000
+```
 
-## Learn More
+### 4. Run locally
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Run frontend + backend together:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+npm run dev
+```
 
-### Code Splitting
+Or separately:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```bash
+npm start
+cd server && npm run dev
+```
 
-### Analyzing the Bundle Size
+## API Overview
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+All protected routes require:
 
-### Making a Progressive Web App
+```http
+Authorization: Bearer <firebase_id_token>
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Auth routes:
+- `GET /api/auth/me`
+- `POST /api/auth/sync`
+- `PUT /api/auth/updatedetails` (multipart form upload)
 
-### Advanced Configuration
+Transaction routes:
+- `GET /api/transactions`
+- `POST /api/transactions`
+- `POST /api/transactions/import`
+- `DELETE /api/transactions/:id`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Reminder routes:
+- `GET /api/reminders`
+- `POST /api/reminders`
+- `PUT /api/reminders/:id`
+- `DELETE /api/reminders/:id`
 
-### Deployment
+## Deployment (Recommended): Vercel + Render
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### A. Deploy backend on Render
 
-### `npm run build` fails to minify
+1. Push code to GitHub (already done).
+2. In Render, create a new **Web Service** from this repo.
+3. Configure Root Directory as `server`, Build Command as `npm install`, and Start Command as `npm start`.
+4. Add environment variables in Render: `NODE_ENV=production`, `PORT=10000` (or Render default), `MONGO_URI=<your production Mongo URI>`, `FIREBASE_SERVICE_ACCOUNT_BASE64=<base64 of service account json>`.
+5. Deploy and copy your backend URL, for example:
+- `https://expense-tracker-api.onrender.com`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# Expense-Tracker
+### B. Deploy frontend on Vercel
+
+1. In Vercel, import this GitHub repo.
+2. Framework Preset: **Create React App**
+3. Build Command: `npm run build`
+4. Output Directory: `build`
+5. Add frontend env var: `REACT_APP_API_BASE_URL=https://your-backend-url.onrender.com`
+6. Deploy.
+
+This repo includes `vercel.json` for SPA route fallback so browser refresh on routes works.
+
+## Deployment (Alternative): Netlify + Render
+
+### A. Backend
+
+Use the same Render steps above.
+
+### B. Frontend on Netlify
+
+1. In Netlify, import this GitHub repo.
+2. Build settings: Build command `npm run build`, Publish directory `build`.
+3. Add environment variable: `REACT_APP_API_BASE_URL=https://your-backend-url.onrender.com`.
+4. Deploy.
+
+This repo includes `public/_redirects` for SPA fallback:
+- `/* /index.html 200`
+
+## Production Checklist
+
+- MongoDB allows your backend host IP/network access.
+- Firebase service account belongs to the correct Firebase project.
+- `REACT_APP_API_BASE_URL` points to deployed backend URL (not localhost).
+- CORS is enabled on backend (already enabled in `server/index.js`).
+- Image upload paths resolve from backend static `public` directory.
+
+## Scripts
+
+- `npm start` -> run frontend
+- `npm run build` -> production frontend build
+- `npm run dev` -> run frontend + backend together
+
+- In `server/`:
+- `npm start` -> run backend
+- `npm run dev` -> run backend with nodemon
+
+## Security Notes
+
+- Never commit `server/serviceAccountKey.json`.
+- Never commit `.env` files with secrets.
+- Credentials are now protected in `.gitignore`.
+
+## Troubleshooting
+
+- Frontend loads but API fails: check `REACT_APP_API_BASE_URL` in Vercel/Netlify.
+- `Not authorized` errors: ensure Firebase token is sent in `Authorization` header.
+- Backend startup fails: verify `MONGO_URI` and `FIREBASE_SERVICE_ACCOUNT_BASE64`.
+- SPA route returns 404 on refresh: ensure `vercel.json` or `public/_redirects` is deployed.
