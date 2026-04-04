@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { auth } from "../firebase";
-import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "firebase/auth";
 
 const AuthContext = createContext();
 
@@ -9,6 +9,21 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // 1. Process Google Login Redirect Responses
+    const processRedirect = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          console.log("Successfully intercepted Google Auth Redirect:", result.user.email);
+        }
+      } catch (err) {
+        console.error("FATAL FIREBASE REDIRECT ERROR:", err.code, err.message);
+        alert("Firebase Auth Error: " + err.message); // Force it to show on screen for debugging
+      }
+    };
+    processRedirect();
+
+    // 2. Track Auth State
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
@@ -24,6 +39,7 @@ export const AuthProvider = ({ children }) => {
           if (data.success) {
             setUser({ ...data.data, token });
           } else {
+            console.error("Backend auth failed:", data.error);
             setUser(null);
           }
         } catch (err) {
