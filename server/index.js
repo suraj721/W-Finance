@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const colors = require('colors');
 const morgan = require('morgan');
 const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/db');
 
 dotenv.config({ path: './.env' });
@@ -34,6 +35,11 @@ const reminders = require('./routes/reminders');
 app.use('/api/transactions', transactions);
 app.use('/api/auth', auth);
 app.use('/api/reminders', reminders);
+
+// Serve frontend appropriately for any unmatched routes 
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+});
 
 const PORT = process.env.PORT || 5000;
 

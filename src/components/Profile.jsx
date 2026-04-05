@@ -29,7 +29,7 @@ const Profile = () => {
 
     const fetchReminders = useCallback(async () => {
         try {
-            const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+            const apiUrl = process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "");
             const res = await fetch(`${apiUrl}/api/reminders`, {
                 headers: { 'Authorization': `Bearer ${user.token}` }
             });
@@ -45,7 +45,7 @@ const Profile = () => {
             setName(user.name);
             setEmail(user.email);
             if(user.photo){
-                const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+                const apiUrl = process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "");
                 setPreview(`${apiUrl}/${user.photo}`);
             }
             fetchReminders();
@@ -56,7 +56,7 @@ const Profile = () => {
         e.preventDefault();
         setIsRLoading(true);
         try {
-            const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+            const apiUrl = process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "");
             const res = await fetch(`${apiUrl}/api/reminders`, {
                 method: 'POST',
                 headers: {
@@ -83,7 +83,7 @@ const Profile = () => {
 
     const handleDeleteReminder = async (id) => {
         try {
-            const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+            const apiUrl = process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "");
             const res = await fetch(`${apiUrl}/api/reminders/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${user.token}` }
@@ -121,7 +121,7 @@ const Profile = () => {
 
         try {
             console.log("Sending update request...");
-            const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+            const apiUrl = process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "");
             const res = await fetch(`${apiUrl}/api/auth/updatedetails`, {
                 method: 'PUT',
                 headers: {
@@ -162,7 +162,7 @@ const Profile = () => {
         setPasswordMessage(null);
 
         try {
-            const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+            const apiUrl = process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "");
             const res = await fetch(`${apiUrl}/api/auth/updatepassword`, {
                 method: 'PUT',
                 headers: {

@@ -32,7 +32,7 @@ function AppContent() {
     const getTransactions = useCallback(async () => {
       try {
         if (!user?.token) return;
-        const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+        const apiUrl = process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "");
         const res = await fetch(`${apiUrl}/api/transactions`, {
           headers: {
             Authorization: `Bearer ${user.token}`
@@ -59,7 +59,7 @@ function AppContent() {
 
       try {
         if (!user?.token) return;
-        const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+        const apiUrl = process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "");
         const res = await fetch(`${apiUrl}/api/transactions`, {
           method: 'POST',
           headers: {
@@ -79,7 +79,7 @@ function AppContent() {
     const deleteTransaction = async (id) => {
       try {
         if (!user?.token) return;
-        const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+        const apiUrl = process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "");
         await fetch(`${apiUrl}/api/transactions/${id}`, {
           method: 'DELETE',
           headers: {

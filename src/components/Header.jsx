@@ -12,7 +12,7 @@ function Header({ onAddClick }) {
 
   // const fetchReminders = useCallback(async () => {
   //   try {
-  //     const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+  //     const apiUrl = process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "");
   //     const token = localStorage.getItem('token');
   //     const res = await fetch(`${apiUrl}/api/reminders`, {
   //       headers: { 'Authorization': `Bearer ${token}` }
@@ -30,7 +30,7 @@ function Header({ onAddClick }) {
     if (!user?.token) return;
   
     try {
-      const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+      const apiUrl = process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "");
       const res = await fetch(`${apiUrl}/api/reminders`, {
         headers: { 'Authorization': `Bearer ${user.token}` }
       });
@@ -191,7 +191,7 @@ function Header({ onAddClick }) {
                 <Link to="/profile" className="flex items-center gap-4 pl-1.5 pr-5 py-1.5 bg-white dark:bg-[#111111] rounded-full border border-slate-300 dark:border-[#222222] hover:border-slate-400 dark:hover:border-white/20 transition-all group shadow-xl">
                   <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white/5 ring-2 ring-primary/10">
                     {user.photo && user.photo !== 'no-photo.jpg' ? (
-                      <img src={`${process.env.REACT_APP_API_BASE_URL || "http://localhost:5000"}/${user.photo}`} alt={user.name} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500" />
+                      <img src={`${process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "")}/${user.photo}`} alt={user.name} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-slate-100 dark:bg-[#1A1A1A] text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase">
                         {user.name.charAt(0)}

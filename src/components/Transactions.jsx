@@ -88,7 +88,7 @@ function Transactions({ transactions, deleteTransaction }) {
                     throw new Error("No valid transactions found to import");
                 }
 
-                const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+                const apiUrl = process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "");
                 const res = await fetch(`${apiUrl}/api/transactions/import`, {
                     method: 'POST',
                     headers: {

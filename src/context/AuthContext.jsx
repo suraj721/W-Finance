@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
         try {
           const token = await firebaseUser.getIdToken();
           // Sync with backend
-          const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+          const apiUrl = process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "");
           const res = await fetch(`${apiUrl}/api/auth/me`, {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
       const token = await userCredential.user.getIdToken();
       
       // Call backend to ensure user is created with name
-      const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+      const apiUrl = process.env.REACT_APP_API_BASE_URL || (window.location.hostname === "localhost" ? "http://localhost:5000" : "");
       await fetch(`${apiUrl}/api/auth/sync`, {
         method: "POST",
         headers: {
